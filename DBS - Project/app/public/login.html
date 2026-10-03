@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — FitWell</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ min-height:100vh; display:flex; flex-direction:column; }
+
+  .top-bar{ padding:26px 32px; display:flex; align-items:center; justify-content:space-between; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:24px; color:var(--ink); }
+  .back-link{ font-size:14px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .back-link:hover{ color:var(--primary-dk); }
+  .back-link svg{ width:16px; height:16px; }
+
+  .stage{ flex:1; display:flex; align-items:center; justify-content:center; padding:20px 20px 60px; }
+
+  .auth-card{
+    width:100%; max-width:980px; min-height:600px; background:var(--panel);
+    border-radius:var(--radius-l); overflow:hidden; box-shadow:var(--shadow-soft);
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line);
+  }
+
+  /* ---- Illustration side ---- */
+  .auth-art{
+    position:relative; background:var(--primary); padding:48px; color:#fff;
+    display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;
+  }
+  .auth-art::before{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 85% 12%, rgba(242,180,65,0.5), transparent 40%),
+      radial-gradient(circle at 10% 90%, rgba(255,107,74,0.4), transparent 45%),
+      linear-gradient(160deg, var(--primary) 0%, var(--primary-dk) 100%);
+  }
+  .auth-art > *{ position:relative; z-index:1; }
+  .art-eyebrow{ font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; opacity:.85; }
+  .auth-art h2{ font-size:clamp(30px,4vw,42px); margin-top:14px; line-height:1.05; }
+  .auth-art .figure-wrap{ display:flex; justify-content:center; margin:24px 0; }
+  .quote-block{ font-size:14px; opacity:.9; border-left:2px solid var(--gold); padding-left:14px; }
+  .quote-block b{ display:block; margin-top:8px; font-size:13px; opacity:.75; }
+
+  /* ---- Form side ---- */
+  .auth-form-wrap{ padding:56px 52px; display:flex; flex-direction:column; justify-content:center; }
+  .auth-form-wrap h1{ font-size:40px; color:var(--ink); }
+  .auth-form-wrap .subtitle{ color:var(--ink-soft); margin:10px 0 30px; font-size:15px; }
+
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:13px; font-weight:600; margin-bottom:7px; color:var(--ink); }
+  .input-shell{
+    position:relative; display:flex; align-items:center;
+    border:1.5px solid var(--line); border-radius:var(--radius-s); background:var(--bg);
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .input-shell:focus-within{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(47,93,80,0.12); }
+  .input-shell.error{ border-color:var(--coral-dk); box-shadow:0 0 0 4px rgba(255,107,74,0.12); }
+  .input-shell svg.leading{ width:18px; height:18px; margin-left:14px; color:var(--ink-soft); flex-shrink:0; }
+  .input-shell input{
+    flex:1; border:none; background:transparent; padding:13px 14px; font-size:14.5px; font-family:var(--font-body);
+    color:var(--ink); outline:none;
+  }
+  .toggle-eye{ background:none; border:none; padding:0 14px; display:flex; color:var(--ink-soft); }
+  .toggle-eye:hover{ color:var(--ink); }
+  .toggle-eye svg{ width:19px; height:19px; }
+  .error-msg{ font-size:12.5px; color:var(--coral-dk); margin-top:6px; min-height:15px; }
+
+  .row-between{ display:flex; align-items:center; justify-content:space-between; margin:6px 0 26px; font-size:13.5px; }
+  .remember{ display:flex; align-items:center; gap:8px; color:var(--ink-soft); }
+  .remember input{ width:16px; height:16px; accent-color:var(--primary); }
+  .forgot-link{ color:var(--primary-dk); font-weight:600; }
+  .forgot-link:hover{ text-decoration:underline; }
+
+  .form-alert{
+    display:none; align-items:center; gap:8px; background:rgba(255,107,74,0.1); color:var(--coral-dk);
+    border:1px solid rgba(255,107,74,0.3); border-radius:var(--radius-s); padding:11px 14px; font-size:13px; margin-bottom:18px;
+  }
+  .form-alert.show{ display:flex; }
+  .form-success{
+    display:none; align-items:center; gap:8px; background:var(--sage-soft); color:var(--primary-dk);
+    border:1px solid var(--sage); border-radius:var(--radius-s); padding:11px 14px; font-size:13px; margin-bottom:18px;
+  }
+  .form-success.show{ display:flex; }
+
+  .divider-row{ display:flex; align-items:center; gap:14px; margin:26px 0; color:var(--ink-soft); font-size:12.5px; text-transform:uppercase; letter-spacing:.08em; }
+  .divider-row::before, .divider-row::after{ content:''; flex:1; height:1px; background:var(--line); }
+
+  .social-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .social-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; border-radius:var(--radius-s);
+    border:1.5px solid var(--line); background:var(--panel); font-weight:600; font-size:14px; color:var(--ink);
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .social-btn:hover{ border-color:var(--ink); transform:translateY(-2px); }
+  .social-btn svg{ width:18px; height:18px; }
+
+  .signup-line{ text-align:center; margin-top:28px; font-size:14px; color:var(--ink-soft); }
+  .signup-line a{ color:var(--coral-dk); font-weight:700; }
+  .signup-line a:hover{ text-decoration:underline; }
+
+  @media (max-width:860px){
+    .auth-card{ grid-template-columns:1fr; }
+    .auth-art{ display:none; }
+    .auth-form-wrap{ padding:40px 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="14" fill="#2F5D50"/><path d="M6 15h4l2-6 4 12 2-6h6" stroke="#FF6B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    FitWell
+  </div>
+  <a href="home.html" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+    Back to Home
+  </a>
+</div>
+
+<div class="stage">
+  <div class="auth-card">
+
+    <!-- ===== Illustration side ===== -->
+    <div class="auth-art">
+      <div>
+        <span class="art-eyebrow">FitWell members</span>
+        <h2>Every session brings<br>you closer.</h2>
+      </div>
+
+      <div class="figure-wrap">
+        <svg width="220" height="200" viewBox="0 0 220 200" fill="none">
+          <circle cx="110" cy="46" r="24" fill="rgba(255,255,255,0.92)"/>
+          <path d="M110 74 L110 140 M110 100 L70 128 M110 100 L155 82 M110 140 L80 190 M110 140 L145 186" stroke="rgba(255,255,255,0.92)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M10 170 Q60 170 80 190 T150 150 T210 170" stroke="#F2B441" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
+        </svg>
+      </div>
+
+      <div class="quote-block">
+        “Booking my trainer and paying, all in one flow, is why I actually kept my Tuesday sessions.”
+        <b>— Priya N., FitWell member</b>
+      </div>
+    </div>
+
+    <!-- ===== Form side ===== -->
+    <div class="auth-form-wrap">
+      <h1>Welcome Back!</h1>
+      <p class="subtitle">Login to continue your fitness journey.</p>
+
+      <div class="form-alert" id="formAlert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span id="formAlertText">Please fix the errors below.</span>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        <span>Login successful — redirecting to your dashboard…</span>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="field" id="nameField" style="display:none;">
+          <label for="name">Full name</label>
+          <div class="input-shell" id="nameShell">
+            <svg class="leading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <input type="text" id="name" placeholder="Your name" autocomplete="name">
+          </div>
+          <div class="error-msg" id="nameError"></div>
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <div class="input-shell" id="emailShell">
+            <svg class="leading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+          </div>
+          <div class="error-msg" id="emailError"></div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-shell" id="passwordShell">
+            <svg class="leading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+            <button type="button" class="toggle-eye" id="toggleEye" aria-label="Show password">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="passwordError"></div>
+        </div>
+
+        <div class="row-between">
+          <label class="remember"><input type="checkbox" id="remember"> Remember me</label>
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="padding:15px;" id="submitBtn">Login</button>
+      </form>
+
+      <div class="divider-row">or</div>
+
+      <div class="social-grid">
+        <button class="social-btn" type="button">
+          <svg viewBox="0 0 24 24"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.2s2.7-6.2 6-6.2c1.9 0 3.1.8 3.9 1.5l2.6-2.5C16.9 3.3 14.7 2.3 12 2.3 6.9 2.3 2.7 6.5 2.7 12S6.9 21.7 12 21.7c6.9 0 9.1-4.8 9.1-7.3 0-.5-.05-.9-.13-1.3H12z"/></svg>
+          Google
+        </button>
+        <button class="social-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 1.5c.1 1.1-.4 2.2-1 3-.7.9-1.9 1.6-3 1.5-.1-1.1.4-2.2 1-3 .7-.9 2-1.5 3-1.5zM20 17.4c-.6 1.3-.9 1.9-1.7 3-1.1 1.6-2.6 3.5-4.5 3.5-1.7 0-2.1-1.1-4.4-1.1-2.3 0-2.8 1.1-4.4 1.1-1.9 0-3.3-1.8-4.4-3.4C-1.8 16.8-.9 10.5 2.7 8c1-1.5 2.6-2.3 4.1-2.3 1.7 0 2.8 1.1 4.2 1.1 1.4 0 2.2-1.1 4.2-1.1 1.4 0 2.8.7 3.8 1.9-3.4 1.9-2.8 6.7 1 9.8z"/></svg>
+          Apple
+        </button>
+      </div>
+
+      <p class="signup-line" id="signupLine">Don't have an account? <a href="#" id="modeToggle">Sign Up</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form        = document.getElementById('loginForm');
+  const nameField   = document.getElementById('nameField');
+  const nameInput   = document.getElementById('name');
+  const nameShell   = document.getElementById('nameShell');
+  const nameError   = document.getElementById('nameError');
+  const emailInput  = document.getElementById('email');
+  const passInput   = document.getElementById('password');
+  const emailShell  = document.getElementById('emailShell');
+  const passShell   = document.getElementById('passwordShell');
+  const emailError  = document.getElementById('emailError');
+  const passError   = document.getElementById('passwordError');
+  const formAlert   = document.getElementById('formAlert');
+  const formAlertText = document.getElementById('formAlertText');
+  const formSuccess = document.getElementById('formSuccess');
+  const submitBtn   = document.getElementById('submitBtn');
+  const modeToggle  = document.getElementById('modeToggle');
+  const signupLine  = document.getElementById('signupLine');
+  const titleEl     = document.querySelector('.auth-form-wrap h1');
+  const subtitleEl  = document.querySelector('.auth-form-wrap .subtitle');
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let mode = 'login'; // or 'register'
+
+  // If already logged in, skip straight back to the app
+  if (localStorage.getItem('fitwell_token')) {
+    window.location.href = 'home.html';
+  }
+
+  function setFieldState(shell, errEl, message){
+    if(message){
+      shell.classList.add('error');
+      errEl.textContent = message;
+    } else {
+      shell.classList.remove('error');
+      errEl.textContent = '';
+    }
+  }
+
+  function validateEmail(){
+    const v = emailInput.value.trim();
+    if(!v){ setFieldState(emailShell, emailError, 'Email is required.'); return false; }
+    if(!emailPattern.test(v)){ setFieldState(emailShell, emailError, 'Enter a valid email address.'); return false; }
+    setFieldState(emailShell, emailError, '');
+    return true;
+  }
+
+  function validatePassword(){
+    const v = passInput.value;
+    if(!v){ setFieldState(passShell, passError, 'Password is required.'); return false; }
+    if(v.length < 6){ setFieldState(passShell, passError, 'Password must be at least 6 characters.'); return false; }
+    setFieldState(passShell, passError, '');
+    return true;
+  }
+
+  function validateName(){
+    if(mode !== 'register') return true;
+    const v = nameInput.value.trim();
+    if(!v){ setFieldState(nameShell, nameError, 'Name is required.'); return false; }
+    setFieldState(nameShell, nameError, '');
+    return true;
+  }
+
+  emailInput.addEventListener('blur', validateEmail);
+  passInput.addEventListener('blur', validatePassword);
+  nameInput.addEventListener('blur', validateName);
+  emailInput.addEventListener('input', () => { if(emailShell.classList.contains('error')) validateEmail(); });
+  passInput.addEventListener('input', () => { if(passShell.classList.contains('error')) validatePassword(); });
+  nameInput.addEventListener('input', () => { if(nameShell.classList.contains('error')) validateName(); });
+
+  document.getElementById('toggleEye').addEventListener('click', function(){
+    const isPassword = passInput.type === 'password';
+    passInput.type = isPassword ? 'text' : 'password';
+    this.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    document.getElementById('eyeIcon').innerHTML = isPassword
+      ? '<path d="M3 3l18 18M10.6 10.6a3 3 0 004.24 4.24M9.9 4.24A10.5 10.5 0 0112 4c7 0 11 8 11 8a17.7 17.7 0 01-3.16 4.2M6.5 6.5C3.6 8.3 1 12 1 12s4 8 11 8a10.6 10.6 0 004.9-1.2"/>'
+      : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
+  });
+
+  modeToggle.addEventListener('click', function(e){
+    e.preventDefault();
+    formAlert.classList.remove('show');
+    formSuccess.classList.remove('show');
+    if (mode === 'login') {
+      mode = 'register';
+      nameField.style.display = '';
+      titleEl.textContent = 'Create your account';
+      subtitleEl.textContent = 'Sign up to start booking trainers.';
+      submitBtn.textContent = 'Sign Up';
+      signupLine.innerHTML = 'Already have an account? <a href="#" id="modeToggle">Login</a>';
+    } else {
+      mode = 'login';
+      nameField.style.display = 'none';
+      titleEl.textContent = 'Welcome Back!';
+      subtitleEl.textContent = 'Login to continue your fitness journey.';
+      submitBtn.textContent = 'Login';
+      signupLine.innerHTML = "Don't have an account? <a href=\"#\" id=\"modeToggle\">Sign Up</a>";
+    }
+  });
+
+  // The link inside signupLine gets recreated via innerHTML above, so delegate
+  // from the stable parent instead of re-binding a new listener each time.
+  signupLine.addEventListener('click', function(e){
+    if (e.target && e.target.id === 'modeToggle' && e.target !== modeToggle) {
+      e.preventDefault();
+      modeToggle.click();
+    }
+  });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    formSuccess.classList.remove('show');
+    formAlert.classList.remove('show');
+
+    const okName  = validateName();
+    const okEmail = validateEmail();
+    const okPass  = validatePassword();
+
+    if(!okName || !okEmail || !okPass){
+      formAlertText.textContent = 'Please fix the errors below.';
+      formAlert.classList.add('show');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = mode === 'register' ? 'Signing up…' : 'Logging in…';
+
+    try {
+      const endpoint = mode === 'register' ? '/api/auth/register' : '/api/auth/login';
+      const body = mode === 'register'
+        ? { name: nameInput.value.trim(), email: emailInput.value.trim(), password: passInput.value }
+        : { email: emailInput.value.trim(), password: passInput.value };
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        formAlertText.textContent = data.error || 'Something went wrong.';
+        formAlert.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === 'register' ? 'Sign Up' : 'Login';
+        return;
+      }
+
+      localStorage.setItem('fitwell_token', data.token);
+      localStorage.setItem('fitwell_user', JSON.stringify(data.user));
+
+      formSuccess.classList.add('show');
+      formSuccess.querySelector('span').textContent = 'Success — redirecting to your dashboard…';
+      setTimeout(() => { window.location.href = 'home.html'; }, 700);
+    } catch (err) {
+      formAlertText.textContent = 'Could not reach the server. Is it running?';
+      formAlert.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = mode === 'register' ? 'Sign Up' : 'Login';
+    }
+  });
+</script>
+
+</body>
+</html>

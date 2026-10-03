@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitWell — Transform Your Body, Transform Your Life</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:100;
+    background:rgba(243,245,236,0.88); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:82px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:26px; color:var(--ink); }
+  .logo .pulse-dot{ width:30px; height:30px; }
+  .nav-links{ display:flex; align-items:center; gap:36px; font-weight:600; font-size:14.5px; }
+  .nav-links a{ position:relative; color:var(--ink); padding:6px 0; }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--coral);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-cta{ display:flex; align-items:center; gap:16px; }
+  .burger{ display:none; background:none; border:none; padding:8px; }
+  .burger span{ display:block; width:24px; height:2px; background:var(--ink); margin:5px 0; }
+
+  /* ---------- Hero ---------- */
+  .hero{ position:relative; overflow:hidden; padding:76px 0 40px; }
+  .hero-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center; }
+  .hero h1{ font-size:clamp(46px,6.6vw,84px); line-height:0.98; color:var(--ink); }
+  .hero h1 em{ font-style:normal; color:var(--coral); }
+  .hero p.lead{ margin:26px 0 34px; font-size:18px; color:var(--ink-soft); max-width:480px; }
+  .hero-cta{ display:flex; gap:16px; flex-wrap:wrap; }
+  .hero-stats{ display:flex; gap:34px; margin-top:52px; padding-top:28px; border-top:1px solid var(--line); }
+  .hero-stats div b{ display:block; font-family:var(--font-mono); font-size:26px; color:var(--primary-dk); }
+  .hero-stats div span{ font-size:12.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em; }
+
+  .hero-art{
+    position:relative; background:var(--primary); border-radius:var(--radius-l);
+    aspect-ratio:4/4.6; overflow:hidden; box-shadow:var(--shadow-soft);
+  }
+  .hero-art::before{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 78% 18%, rgba(242,180,65,0.55), transparent 42%),
+      radial-gradient(circle at 15% 85%, rgba(255,107,74,0.45), transparent 45%),
+      linear-gradient(160deg, var(--primary) 0%, var(--primary-dk) 100%);
+  }
+  .hero-art svg.figure{ position:absolute; inset:0; width:100%; height:100%; }
+  .hero-art .badge{
+    position:absolute; top:24px; left:24px; background:rgba(255,255,255,0.95); color:var(--ink);
+    border-radius:999px; padding:10px 16px; font-family:var(--font-mono); font-size:12px;
+    display:flex; align-items:center; gap:8px; box-shadow:var(--shadow-card);
+  }
+  .hero-art .badge b{ color:var(--coral); }
+  .hero-art .ring-card{
+    position:absolute; bottom:22px; right:22px; background:rgba(20,33,27,0.55);
+    backdrop-filter:blur(6px); border-radius:var(--radius-m); padding:16px 18px; color:#fff;
+    display:flex; align-items:center; gap:12px;
+  }
+  .hero-art .ring-card .num{ font-family:var(--font-mono); font-size:22px; }
+  .hero-art .ring-card small{ display:block; font-size:11px; opacity:.8; text-transform:uppercase; letter-spacing:.08em; }
+
+  .pulse-line{ width:100%; display:block; margin:0; }
+  .pulse-line path{
+    fill:none; stroke:var(--sage); stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+    stroke-dasharray:1400; stroke-dashoffset:1400;
+    animation:draw 2.4s ease forwards .3s;
+  }
+  .divider{ padding:6px 0 0; }
+  .divider path{ stroke:var(--line); }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  /* ---------- Marquee ---------- */
+  .marquee{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg-alt); overflow:hidden; padding:16px 0; }
+  .marquee-track{ display:flex; gap:56px; white-space:nowrap; animation:scroll 22s linear infinite; width:max-content; }
+  .marquee-track span{ font-family:var(--font-mono); font-size:13px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+  @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+  /* ---------- Plans ---------- */
+  .plans-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .plan-card{
+    background:var(--panel); border-radius:var(--radius-m); overflow:hidden;
+    border:1px solid var(--line); display:flex; flex-direction:column;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .plan-card:hover{ transform:translateY(-8px); box-shadow:var(--shadow-card); }
+  .plan-media{ position:relative; height:150px; }
+  .plan-media svg{ width:100%; height:100%; }
+  .plan-tag{
+    position:absolute; top:14px; left:14px; background:rgba(255,255,255,0.92); color:var(--ink);
+    font-family:var(--font-mono); font-size:11px; padding:5px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.06em;
+  }
+  .plan-body{ padding:22px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .plan-body h3{ font-family:var(--font-body); font-weight:700; font-size:19px; }
+  .plan-body p{ color:var(--ink-soft); font-size:14px; margin:0; flex:1; }
+  .plan-meta{ display:flex; align-items:center; justify-content:space-between; font-family:var(--font-mono); font-size:13px; color:var(--ink-soft); border-top:1px dashed var(--line); padding-top:12px; }
+  .plan-meta .price{ font-size:18px; color:var(--ink); font-weight:700; }
+  .plan-book{
+    margin-top:4px; width:100%; padding:12px; border-radius:999px; border:2px solid var(--primary);
+    background:transparent; color:var(--primary); font-weight:700; font-size:14px;
+    transition:all .25s ease;
+  }
+  .plan-book:hover{ background:var(--primary); color:#fff; }
+
+  .trainers-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .trainer-card{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:24px; display:flex; flex-direction:column; gap:10px; text-align:center;
+  }
+  .trainer-avatar{
+    width:64px; height:64px; border-radius:50%; margin:0 auto;
+    background:var(--sage-soft); color:var(--primary-dk);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:20px;
+  }
+  .trainer-card h3{ font-size:17px; }
+  .trainer-card p{ color:var(--ink-soft); font-size:13px; margin:0; }
+  .trainer-tags{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+  .trainer-tags span{
+    background:var(--bg-alt); color:var(--primary-dk); font-size:11px;
+    padding:4px 10px; border-radius:99px; text-transform:capitalize;
+  }
+  .trainer-rating{ color:var(--primary); font-weight:700; font-size:13px; }
+  @media(max-width:900px){ .trainers-grid{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ---------- How it works ---------- */
+  .steps-wrap{ position:relative; }
+  .steps-track{
+    position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:12px;
+  }
+  .steps-track::before{
+    content:''; position:absolute; top:29px; left:6%; right:6%; height:2px;
+    background:repeating-linear-gradient(90deg, var(--sage) 0 10px, transparent 10px 18px);
+  }
+  .step{ position:relative; display:flex; flex-direction:column; gap:16px; }
+  .step-marker{
+    width:58px; height:58px; border-radius:50%; background:var(--panel); border:2px solid var(--primary);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:16px; color:var(--primary);
+    z-index:1;
+  }
+  .step:nth-child(2) .step-marker,.step:nth-child(4) .step-marker{ background:var(--primary); color:#fff; }
+  .step h4{ font-family:var(--font-body); font-size:17px; font-weight:700; }
+  .step p{ color:var(--ink-soft); font-size:14px; margin:0; }
+
+  /* ---------- Why choose ---------- */
+  .why-section{ background:var(--primary-dk); color:#fff; border-radius:var(--radius-l); }
+  .why-section .section-head h2{ color:#fff; }
+  .why-section .section-head p{ color:rgba(255,255,255,0.72); }
+  .why-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:20px; }
+  .why-card{
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:var(--radius-m);
+    padding:26px 20px; transition:background .25s ease, transform .25s ease;
+  }
+  .why-card:hover{ background:rgba(255,255,255,0.12); transform:translateY(-6px); }
+  .why-card svg{ width:34px; height:34px; margin-bottom:16px; color:var(--gold); }
+  .why-card h4{ font-family:var(--font-body); font-size:15.5px; font-weight:700; margin-bottom:8px; }
+  .why-card p{ font-size:13px; color:rgba(255,255,255,0.7); margin:0; }
+
+  /* ---------- Testimonials ---------- */
+  .testi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .testi-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius-m); padding:28px; position:relative; }
+  .testi-card .quote-mark{ font-family:var(--font-display); font-size:52px; color:var(--sage); line-height:1; }
+  .testi-card p{ color:var(--ink-soft); font-size:14.5px; margin:12px 0 24px; }
+  .testi-person{ display:flex; align-items:center; gap:12px; }
+  .avatar{ width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-family:var(--font-display); font-size:18px; }
+  .testi-person b{ display:block; font-size:14px; }
+  .testi-person span{ font-size:12px; color:var(--ink-soft); }
+  .stars{ color:var(--gold); font-size:13px; letter-spacing:2px; }
+
+  /* ---------- Footer ---------- */
+  footer{ background:var(--ink); color:rgba(255,255,255,0.75); padding:72px 0 28px; margin-top:40px; }
+  .foot-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; gap:40px; padding-bottom:48px; border-bottom:1px solid rgba(255,255,255,0.12); }
+  .foot-logo{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:24px; color:#fff; margin-bottom:14px; }
+  .foot-grid p{ font-size:13.5px; line-height:1.7; }
+  .foot-grid h5{ color:#fff; font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:18px; }
+  .foot-grid ul li{ margin-bottom:11px; font-size:14px; }
+  .foot-grid ul li a:hover{ color:var(--gold); }
+  .social-row{ display:flex; gap:10px; margin-top:18px; }
+  .social-row a{
+    width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center; transition:all .25s ease;
+  }
+  .social-row a:hover{ background:var(--coral); border-color:var(--coral); }
+  .social-row svg{ width:16px; height:16px; }
+  .foot-bottom{ display:flex; justify-content:space-between; align-items:center; padding-top:24px; font-size:12.5px; flex-wrap:wrap; gap:12px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:980px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-art{ aspect-ratio:16/10; order:-1; }
+    .plans-grid{ grid-template-columns:repeat(2,1fr); }
+    .steps-track{ grid-template-columns:repeat(2,1fr); row-gap:40px; }
+    .steps-track::before{ display:none; }
+    .why-grid{ grid-template-columns:repeat(2,1fr); }
+    .testi-grid{ grid-template-columns:1fr; }
+    .foot-grid{ grid-template-columns:1fr 1fr; row-gap:36px; }
+  }
+  @media (max-width:760px){
+    .nav-links, .nav-cta .btn-outline{ display:none; }
+    .burger{ display:block; }
+    .section{ padding:64px 0; }
+    .hero{ padding:44px 0 20px; }
+    .why-grid{ grid-template-columns:1fr; }
+    .foot-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="wrap">
+    <div class="logo">
+      <svg class="pulse-dot" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="14" fill="#2F5D50"/><path d="M6 15h4l2-6 4 12 2-6h6" stroke="#FF6B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      FitWell
+    </div>
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#plans">Workout Plans</a>
+      <a href="#trainers">Trainers</a>
+      <a href="#wellness">Wellness Programs</a>
+      <a href="#bookings" id="myBookingsLink">My Bookings</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#plans" class="btn btn-outline" style="padding:11px 20px;">Explore</a>
+      <a href="login.html" class="btn btn-ghost" style="padding:11px 22px;" id="authLink">Login / Sign Up</a>
+    </div>
+    <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Personalized fitness, delivered online</span>
+        <h1 style="margin-top:20px;">Transform Your Body,<br><em>Transform</em> Your Life.</h1>
+        <p class="lead">Book certified trainers, follow structured workout plans, and track your wellness journey — all in one place. Pay securely and start training in minutes.</p>
+        <div class="hero-cta">
+          <a href="#plans" class="btn btn-primary">Explore Plans</a>
+          <a href="#trainers" class="btn btn-outline">Book a Session</a>
+        </div>
+        <div class="hero-stats">
+          <div><b>12,400+</b><span>Members Trained</span></div>
+          <div><b>85</b><span>Certified Trainers</span></div>
+          <div><b>4.9 / 5</b><span>Average Rating</span></div>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <span class="badge">● <b>Live</b> Session in progress</span>
+        <svg class="figure" viewBox="0 0 400 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="205" cy="120" r="34" fill="rgba(255,255,255,0.92)"/>
+          <path d="M205 156 L205 260 M205 190 L150 230 M205 190 L262 160 M205 260 L162 350 M205 260 L252 345" stroke="rgba(255,255,255,0.92)" stroke-width="14" stroke-linecap="round"/>
+          <path d="M40 300 Q120 300 150 340 T 260 260 T 360 300" stroke="#F2B441" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.85"/>
+        </svg>
+        <div class="ring-card">
+          <span class="num">742</span>
+          <small>kcal burned<br>today</small>
+        </div>
+      </div>
+    </div>
+
+    <svg class="pulse-line" viewBox="0 0 1180 60" preserveAspectRatio="none">
+      <path d="M0 30 H420 L450 10 L470 50 L495 30 H1180" />
+    </svg>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Weight Loss</span><span>Muscle Building</span><span>Yoga &amp; Flexibility</span><span>Home Workouts</span><span>Nutrition Coaching</span><span>Mindfulness</span>
+    <span>Weight Loss</span><span>Muscle Building</span><span>Yoga &amp; Flexibility</span><span>Home Workouts</span><span>Nutrition Coaching</span><span>Mindfulness</span>
+  </div>
+</div>
+
+<!-- ============ FEATURED PLANS ============ -->
+<section class="section" id="plans">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Featured Plans</span>
+      <h2 style="margin-top:16px;">Pick a program, start today</h2>
+      <p>Every plan is built by certified coaches and adapts to your schedule, equipment, and goals.</p>
+    </div>
+
+    <div class="plans-grid" id="plansGrid">
+
+      <article class="plan-card">
+        <div class="plan-media">
+          <svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" fill="#FF6B4A"/><path d="M0 110 Q75 60 150 100 T300 90 V150 H0 Z" fill="#E5502F"/><circle cx="235" cy="45" r="26" fill="rgba(255,255,255,0.25)"/></svg>
+          <span class="plan-tag">Weight Loss</span>
+        </div>
+        <div class="plan-body">
+          <h3>Weight Loss Program</h3>
+          <p>High-intensity intervals and metabolic conditioning to burn fat and build lasting habits.</p>
+          <div class="plan-meta"><span>8 weeks</span><span class="price">₹1,499</span></div>
+          <button class="plan-book" data-title="Weight Loss Program">Book Now</button>
+        </div>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-media">
+          <svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" fill="#2F5D50"/><path d="M0 100 L60 60 L120 90 L180 40 L240 80 L300 50 V150 H0 Z" fill="#1E4136"/><circle cx="50" cy="40" r="20" fill="rgba(255,255,255,0.22)"/></svg>
+          <span class="plan-tag">Strength</span>
+        </div>
+        <div class="plan-body">
+          <h3>Muscle Building Program</h3>
+          <p>Progressive strength training with structured hypertrophy blocks and form coaching.</p>
+          <div class="plan-meta"><span>12 weeks</span><span class="price">₹1,999</span></div>
+          <button class="plan-book" data-title="Muscle Building Program">Book Now</button>
+        </div>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-media">
+          <svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" fill="#8FB09E"/><circle cx="150" cy="75" r="45" fill="rgba(255,255,255,0.35)"/><circle cx="150" cy="75" r="26" fill="rgba(255,255,255,0.5)"/></svg>
+          <span class="plan-tag">Wellness</span>
+        </div>
+        <div class="plan-body">
+          <h3>Yoga &amp; Flexibility</h3>
+          <p>Guided flows to improve mobility, reduce stress, and restore balance between sessions.</p>
+          <div class="plan-meta"><span>6 weeks</span><span class="price">₹999</span></div>
+          <button class="plan-book" data-title="Yoga &amp; Flexibility">Book Now</button>
+        </div>
+      </article>
+
+      <article class="plan-card">
+        <div class="plan-media">
+          <svg viewBox="0 0 300 150" preserveAspectRatio="xMidYMid slice"><rect width="300" height="150" fill="#F2B441"/><path d="M0 40 H300 M0 75 H300 M0 110 H300" stroke="rgba(255,255,255,0.35)" stroke-width="8"/></svg>
+          <span class="plan-tag">Home</span>
+        </div>
+        <div class="plan-body">
+          <h3>Home Workout Plan</h3>
+          <p>No-equipment routines designed for small spaces and busy schedules — anywhere, anytime.</p>
+          <div class="plan-meta"><span>4 weeks</span><span class="price">₹699</span></div>
+          <button class="plan-book" data-title="Home Workout Plan">Book Now</button>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRAINERS ============ -->
+<section class="section" id="trainers">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Meet the Team</span>
+      <h2 style="margin-top:16px;">Certified trainers</h2>
+      <p>Every trainer on FitWell is vetted, certified, and matched to your program automatically when you book.</p>
+    </div>
+    <div class="trainers-grid" id="trainersGrid">
+      <p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">Loading trainers…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section" style="background:var(--bg-alt);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The Process</span>
+      <h2 style="margin-top:16px;">How it works</h2>
+      <p>Four steps between where you are now and your first session.</p>
+    </div>
+    <div class="steps-track">
+      <div class="step">
+        <div class="step-marker">01</div>
+        <h4>Choose a Workout Plan</h4>
+        <p>Browse programs by goal — weight loss, strength, flexibility, or home training.</p>
+      </div>
+      <div class="step">
+        <div class="step-marker">02</div>
+        <h4>Select Trainer &amp; Schedule</h4>
+        <p>Match with a certified coach and pick times that fit your week.</p>
+      </div>
+      <div class="step">
+        <div class="step-marker">03</div>
+        <h4>Make Secure Payment</h4>
+        <p>Checkout with encrypted, PCI-compliant payment processing.</p>
+      </div>
+      <div class="step">
+        <div class="step-marker">04</div>
+        <h4>Start Your Fitness Journey</h4>
+        <p>Get instant access to your plan, trainer chat, and progress tracker.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY CHOOSE US ============ -->
+<section class="section">
+  <div class="wrap why-section" style="padding:64px 48px;">
+    <div class="section-head">
+      <span class="eyebrow" style="background:rgba(255,255,255,0.12); color:#fff;">Why FitWell</span>
+      <h2 style="margin-top:16px;">Built for people who train for life</h2>
+      <p>Not another generic app — a service backed by real coaches and real accountability.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h4l2-7 4 14 2-7h4"/></svg>
+        <h4>Personalized Plans</h4>
+        <p>Programs adapt to your goals, equipment, and progress.</p>
+      </div>
+      <div class="why-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <h4>Certified Trainers</h4>
+        <p>Every coach is vetted, certified, and reviewed by members.</p>
+      </div>
+      <div class="why-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+        <h4>Flexible Schedules</h4>
+        <p>Book, reschedule, or cancel sessions with a few taps.</p>
+      </div>
+      <div class="why-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <h4>Secure Payments</h4>
+        <p>Encrypted checkout with saved cards and instant receipts.</p>
+      </div>
+      <div class="why-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l5-6 4 4 9-10"/></svg>
+        <h4>Wellness Tracking</h4>
+        <p>Visualize progress across workouts, recovery, and mindset.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Member Stories</span>
+      <h2 style="margin-top:16px;">Real people, real progress</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="quote-mark">“</div>
+        <div class="stars">★★★★★</div>
+        <p>The muscle building plan actually accounted for my bad knee. My trainer adjusted everything in week one.</p>
+        <div class="testi-person">
+          <div class="avatar" style="background:#FF6B4A;">A</div>
+          <div><b>Aditi Rao</b><span>Member since 2024</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="quote-mark">“</div>
+        <div class="stars">★★★★★</div>
+        <p>Booking a yoga session took under a minute, and payment was instant. The habit finally stuck.</p>
+        <div class="testi-person">
+          <div class="avatar" style="background:#2F5D50;">M</div>
+          <div><b>Marcus Lee</b><span>Member since 2023</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="quote-mark">“</div>
+        <div class="stars">★★★★★</div>
+        <p>Lost 9kg on the home workout plan without any equipment. The tracker kept me honest every week.</p>
+        <div class="testi-person">
+          <div class="avatar" style="background:#F2B441;">S</div>
+          <div><b>Sara Ibrahim</b><span>Member since 2025</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo">
+          <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="14" fill="#2F5D50"/><path d="M6 15h4l2-6 4 12 2-6h6" stroke="#FF6B4A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+          FitWell
+        </div>
+        <p>Online workout plan booking and payment platform for fitness and wellness. Train smarter, anywhere.</p>
+        <div class="social-row">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M15 3h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="#" aria-label="Twitter/X"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M11 10l4 2-4 2z" fill="#fff" stroke="none"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#plans">Workout Plans</a></li>
+          <li><a href="#trainers">Trainers</a></li>
+          <li><a href="#wellness">Wellness Programs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Support</h5>
+        <ul>
+          <li><a href="#">My Bookings</a></li>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Payment &amp; Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <p>123 Wellness Ave, Hyderabad, IN</p>
+        <p>support@fitwell.app</p>
+        <p>+91 98765 43210</p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 FitWell. All rights reserved.</span>
+      <span>Made for people who show up.</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast" style="display:none; position:fixed; bottom:24px; right:24px; z-index:999; max-width:320px; padding:14px 18px; border-radius:var(--radius-m); font-size:14px; box-shadow:var(--shadow-card);"></div>
+
+<script>
+  document.querySelector('.burger').addEventListener('click', function(){
+    const links = document.querySelector('.nav-links');
+    const open = links.style.display === 'flex';
+    links.style.cssText = open ? '' : 'display:flex;flex-direction:column;position:absolute;top:82px;left:0;right:0;background:var(--bg);padding:20px 32px;gap:18px;border-bottom:1px solid var(--line);';
+  });
+
+  const token = localStorage.getItem('fitwell_token');
+  const user  = JSON.parse(localStorage.getItem('fitwell_user') || 'null');
+
+  function showToast(message, ok){
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.style.background = ok ? 'var(--sage-soft)' : 'rgba(255,107,74,0.12)';
+    t.style.color = ok ? 'var(--primary-dk)' : 'var(--coral-dk)';
+    t.style.border = '1px solid ' + (ok ? 'var(--sage)' : 'rgba(255,107,74,0.35)');
+    t.style.display = 'block';
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+
+  // ---- Auth-aware nav ----
+  const authLink = document.getElementById('authLink');
+  if (token && user) {
+    authLink.textContent = 'Logout (' + user.name.split(' ')[0] + ')';
+    authLink.href = '#';
+    authLink.addEventListener('click', function(e){
+      e.preventDefault();
+      localStorage.removeItem('fitwell_token');
+      localStorage.removeItem('fitwell_user');
+      window.location.reload();
+    });
+  }
+
+  // ---- Load trainers into the Trainers section ----
+  fetch('/api/trainers')
+    .then(res => res.json())
+    .then(trainers => {
+      const grid = document.getElementById('trainersGrid');
+      if (!Array.isArray(trainers) || !trainers.length) {
+        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">No trainers listed yet.</p>';
+        return;
+      }
+      grid.innerHTML = trainers.map(t => {
+        const name = t.user?.name || 'Trainer';
+        const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        const tags = (t.specialties || []).map(s => '<span>' + s.replace('-', ' ') + '</span>').join('');
+        return '<div class="trainer-card">'
+          + '<div class="trainer-avatar">' + initials + '</div>'
+          + '<h3>' + name + '</h3>'
+          + '<p>' + (t.bio || '') + '</p>'
+          + '<div class="trainer-tags">' + tags + '</div>'
+          + '<div class="trainer-rating">★ ' + (t.ratingAvg || 0).toFixed(1) + '</div>'
+          + '</div>';
+      }).join('');
+    })
+    .catch(() => {
+      document.getElementById('trainersGrid').innerHTML =
+        '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">Could not load trainers right now.</p>';
+    });
+
+  // ---- Load programs from the API and map title -> id for booking ----
+  let programsByTitle = {};
+  fetch('/api/programs')
+    .then(res => res.json())
+    .then(programs => {
+      programsByTitle = Object.fromEntries(programs.map(p => [p.title, p]));
+    })
+    .catch(() => { /* API not running yet — booking buttons will just show an error on click */ });
+
+  document.getElementById('plansGrid').addEventListener('click', async function(e){
+    const btn = e.target.closest('.plan-book');
+    if (!btn) return;
+
+    if (!token) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const program = programsByTitle[btn.dataset.title];
+    if (!program) {
+      showToast('Could not find that program. Try again in a moment.', false);
+      return;
+    }
+
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Booking…';
+
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ programId: program._id }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Booking failed.', false);
+      } else {
+        showToast('Booked ' + program.title + ' — payment confirmed!', true);
+      }
+    } catch (err) {
+      showToast('Could not reach the server. Is it running?', false);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+
+  // ---- My Bookings ----
+  document.getElementById('myBookingsLink').addEventListener('click', async function(e){
+    e.preventDefault();
+    if (!token) { window.location.href = 'login.html'; return; }
+
+    try {
+      const res = await fetch('/api/bookings/mine', { headers: { Authorization: 'Bearer ' + token } });
+      const bookings = await res.json();
+      if (!res.ok) { showToast(bookings.error || 'Could not load bookings.', false); return; }
+      if (!bookings.length) { showToast('You have no bookings yet.', true); return; }
+
+      const lines = bookings.map(b => '• ' + b.program.title + ' with ' + (b.trainer?.user?.name || 'a trainer') + ' — ' + b.status);
+      alert('Your bookings:\n\n' + lines.join('\n'));
+    } catch (err) {
+      showToast('Could not reach the server. Is it running?', false);
+    }
+  });
+</script>
+
+</body>
+</html>
